@@ -1,0 +1,99 @@
+.allDiv{
+
+
+}
+
+.lineOnTop {
+  padding: 1px;
+  color: #696969;
+
+}
+
+.logo{
+  float: left;
+
+}
+
+.titleSmall{
+
+  margin: 0px 0px 0px 0px;
+  padding: 4px 4px 4px 4px;
+  font-size: xx-large;	
+  font-family: Verdana, Helvetica, Arial, serif;
+  font-weight: bold;
+}
+
+.menuColumn {
+	  margin: 5px;
+
+}
+
+#mapCanvas{
+	width: 25.2em;
+	height: 25.2em;
+	padding: 1px;
+	margin: 5px;
+	border-radius: 10px;
+	color: black;
+	
+
+}
+
+.rightBlock{
+	 margin-left: 180px;
+}
+
+.navcolumn {
+  	padding: 8px 8px 8px 8px;
+
+}
+
+.navcolumn h5{
+  padding: 0px 0px 0px 0px;
+
+  font-size: small;
+  border: 1px solid #ccc;
+}
+
+body {
+  margin: 2px;
+  color: white;
+  background-color: #696969;
+ 
+  padding: 2px;
+  border-style: none;
+}
+
+body, td, select, li{
+  font-family: Verdana, Helvetica, Arial, serif;
+  font-size: 10px;
+}
+
+input, button{
+  font-family: Verdana, Helvetica, Arial, serif;
+  font-size: 15px;
+}
+p {
+  margin: 15px;
+  line-height: 1.3em;
+  font-size: small;
+}
+
+
+button {
+	background: -moz-linear-gradient(top, #A9A9A9, #000);
+  	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#A9A9A9), to(#000));
+	color: white;
+	border-radius: 10px;
+	border-style: none;
+	height: 1.5em;	
+	font-size: 17px;
+	}
+
+input {
+	border-radius: 10px;
+	border-style: none;
+	height: 1.4em;
+	width: 14em;
+	}
+	
