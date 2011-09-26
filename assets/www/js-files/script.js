@@ -34,6 +34,8 @@ var endTimeHelp;				// Hilfsvariable um die Zeit zu stoppen von Latenz und Downl
 // anderes
 var url;						// Url der Downloaddatei
 var url50;						// URL von 50 Kilobyte Downloadfile
+var url100;						// URL von 100 Kilobyte Downloadfile
+var url150;						// URL von 150 Kilobyte Downloadfile
 var name;						// Variable für Benutzername
 var isAndroidPhone;				// gibt an Ob es ein Androidhandy ist
 var version;					// gibt aktuelle Version an
@@ -41,7 +43,7 @@ var urlString;					// Speichert richtige URL fuer Webapp oder Andropid
 
 // Variablen für die Ausgabe
 var textResult;					// hier wird der Ergebnisstring gespeichert der an die Homepage geschickt wird
-var textResultMail 				// hier wird der Ergebnisstring im Emailformat gespeichert
+var textResultMail; 			// hier wird der Ergebnisstring im Emailformat gespeichert
 var logIndex;					// Anzahl von Logeinträgen
 var logFile;					// speichert Einträge von Log in String ab
 var errorMessage; 				// Hier wird der letzte Fehler abgespeichert
@@ -83,7 +85,7 @@ function initialize() {
 	initSpeedTracker();
 	
 	// Einstellung der Versionsnummer und ob es Android ist oder nicht
-	isAndroidPhone = true;
+	isAndroidPhone = false;
 	version = "1.0";
 	
 	// anzeigen der Versionsnummer
@@ -99,11 +101,16 @@ function initialize() {
 		// für lokales	
 		document.getElementById("platformId").firstChild.data = "Web App";
 		document.getElementById("hardwareId").value = "Web App";
-		urlString = "../";		
+		//urlString = "../";	
+		//urlString = "http://speedtracks.org/";	
+		urlString = "./downloadFiles/";
 	}
 					
 	// URL von Downloadpacket welches runtergeladen werden soll		
-	url50 = urlString + "speedtrack-webclient/" + "downloadFiles/50kb.txt";
+	url50 	= urlString + "speedtrack-webclient/downloadFiles/50kb.txt";
+	//url100 	= urlString + "speedtrack-webclient/downloadFiles/100kb.txt";
+	url100 	= urlString + "100kb.txt";
+	url150 	= urlString + "speedtrack-webclient/downloadFiles/150kb.txt";
 
 	// Array in welches die Werte reingeschrieben werden um Überschneidungen duch Multithreading zu vermeiden
 	latencyTimeStartArray = new Array();
@@ -141,7 +148,7 @@ function geoInit() {
 function geoStart() {	
 	log("geoStart wird aufgerufen");
 	
-	if(navigator.geolocation){
+	if(navigator.geolocation) {
 		// geo ist an
 		navigator.geolocation.getCurrentPosition(geoCallback, geoErrorCallback, {
 			enableHighAccuracy: true,
@@ -154,7 +161,7 @@ function geoStart() {
 //		geolocationStatus = true;
 		
 	    log("geo ist an, der Aktuelle Ort wird als Start gewählt");
-	}else{
+	} else {
 		// Zeige Status
 		document.getElementById("stateOfTracking").firstChild.data = "Geolocation geht nicht";
 		document.getElementById("stateOfTracking").setAttribute("style", "color:red");
@@ -183,7 +190,7 @@ function geoCallback(position) {
 	var lngRounded = (Math.round(c.longitude *1000 *1000))/1000000; 
 	
 	// ueberpruefen ob sich die Koordinaten geaendert haben
-	if(latRounded == originLat && lngRounded == originLng){
+	if(latRounded == originLat && lngRounded == originLng) {
 		// Koordinaten haben sich nicht geaendert, Fehler anzeigen
 		document.getElementById("stateOfTracking").firstChild.data = "keine neuen Koordinaten";
 		document.getElementById("stateOfTracking").setAttribute("style", "color:red");
@@ -193,7 +200,7 @@ function geoCallback(position) {
 		// Punkt wird nicht gezählt
 		geolocationStatus = false;
 		
-	}else{
+	} else {
 		// Koordinaten haben sich geaendert, in origin eintragen
 		originLat = latRounded;
 		originLng = lngRounded;
@@ -293,7 +300,7 @@ function createHeader() {
 }
 
 // Funktion die alle Werte inizialisiert die vor JEDER Messung benötigt werden
-function initSpeedTracker() {
+function initSpeedTracker(p_trackmode) {
 	log("initSpeedTracker wurde aufgerufen.");
 	
 	logFile = logFile + "%0A" + "%0A" + "%0A" + "Starte neue Aufnahme der Logs : " + "%0A";
@@ -318,7 +325,8 @@ function initSpeedTracker() {
 	// Inizialisiert die Anzeigen
 	numberOfmeasurements = 0;
 	
-	document.getElementById("numberOfTracks").firstChild.data = numberOfmeasurements;
+	if(p_trackmode) { document.getElementById("numberOfTracks").firstChild.data = numberOfmeasurements; }
+	else { document.getElementById("numberOfTracks2").firstChild.data = numberOfmeasurements; }
 	document.getElementById("downloadRateOfTracking").firstChild.data = "0";
 	document.getElementById("latencyOfTracking").firstChild.data = "0";
 	document.getElementById("latitudeId").firstChild.data = "Breitengrad";
@@ -342,7 +350,7 @@ function initSpeedTracker() {
 }
 
 // Funktion die eine Intervallmessung startet
-function startIntervalMeasure(measureOption) {
+function startIntervalMeasure(measureOption, p_trackmode) {
 	log("startIntervalMeasure wurde aufgerufen.");
 	
 	shortMeasure = measureOption;
@@ -350,15 +358,15 @@ function startIntervalMeasure(measureOption) {
 	// starte Zeitmessung
 	startTimeMeasure();
 	
-	initSpeedTracker();
+	initSpeedTracker(p_trackmode);
 	finish = false;
-	intervalMeasure();
+	intervalMeasure(p_trackmode);
 	
 	log("startIntervalMeasure wurde beendet.");
 }
 
 // Funktion die im Intervall misst
-function intervalMeasure() {	
+function intervalMeasure(p_trackmode) {
 	log("intervalMeasure wurde aufgerufen.");
 	
 	if(!finish){
@@ -372,23 +380,25 @@ function intervalMeasure() {
 		finDownloadMeasure = false;
 		finLatencyMeasure = false;
 		
-		run();
+		run(p_trackmode);
 		
-		document.getElementById("numberOfTracks").firstChild.data = numberOfmeasurements;
-		if(shortMeasure){
-			aktiv = window.setTimeout("intervalMeasure()", 10000);
-		}else{			
-			aktiv = window.setTimeout("intervalMeasure()", 30000);
-		}
+		if(p_trackmode) document.getElementById("numberOfTracks").firstChild.data = numberOfmeasurements;
+		else document.getElementById("numberOfTracks2").firstChild.data = numberOfmeasurements;
 			
-	}else{
+		if(shortMeasure){
+			aktiv = window.setTimeout(function () {					// Closure-Funktion: Schließt die lokale Funktionsvaribale ein,
+				intervalMeasure(p_trackmode);						// konserviert sie und übergibt diese wieder an die Interval Funktion
+			}, 10000);												// setTimeout("intervalM..(p_trackmode)") verliert die Variable!!
+		} else {
+			aktiv = window.setTimeout(function () {
+				intervalMeasure(p_trackmode);
+			}, 30000); 
+		}
+	} else {
 		// Messung wurde abgebrochen
-		
 		log("Es darf nicht mehr gemessen werden");
-		
 		window.clearTimeout(aktiv);
 	}
-	
 	log("intervalMeasure wurde beendet.");
 }
 
@@ -410,34 +420,45 @@ function stopMeasure() {
 }
 
 // Funktion die die Ergebnisse ausgibt und abspeichert
-function printTrack() {
+function printTrack(p_dataUrlString, p_trackmode) {
 	log("printTrack wurde aufgerufen.");
 	
-	var latency = 0;									// Variable für die Latenzzeit
-	
+	var latency = 0;									// Variable für die Latenzzeit, wird an Upload Servlet übergeben
 	var downloadRate = 0;								// Variable für die Downloadrate
+	var datasize = 0;									// Größe der Datei in kb -> Berechnung der Downloadrate
+	var latencyShow = null;									// Wert der im Frontend angezeigt wird
 	
-	// Downloadrate Berechnen
-	var time = 0;
-	time = ((downloadTimeSum)) / 1000.0; 				//sec
+	if (p_dataUrlString == "url50") datasize = 50;			// setze Größe durch Url
+	else if (p_dataUrlString == "url100") datasize = 100;
+	else if (p_dataUrlString == "url150") datasize = 150;
+	
+	if(downloadTimeSum != 0) {
+		// Downloadrate Berechnen
+		var time = 0;
+		time = ((downloadTimeSum)) / 1000.0; 				//sec
 
-	if (time != 0){
-		if(shortMeasure){								// in Byte pro sec da es so auf HP steht
-			downloadRate = ((50/time)*1000);			// nur 50 kb werden runtergeladen	
-			
-			latency = ((latencyTimeSum ) / 2); 			// milli sec
-		}else{
-			downloadRate = ((150/time)*1000);			// 150 kb werden runtergeladen
-			
-			latency = ((latencyTimeSum ) / 3 / 2); 		// milli sec
-		}
-	} else{
-		downloadRate = 0;								// wenn time == 0 muss ein Fehler passiert sein!!!!
+		if (time != 0){
+			if(shortMeasure) {
+				downloadRate = ((datasize/time));			// Normale Messungen, Angabe in KB/s (Bytes/s = downloadRate*1000)
+				
+				latency = ((latencyTimeSum ) / 2); 			// milli sec
+			} else {
+				downloadRate = ((datasize/time));			// "3er" Messungen
+				
+				latency = ((latencyTimeSum ) / 3 / 2); 		// milli sec
+			}
+		} 
+	} else {
+		downloadRate = 0;
+		latency = 0;								// Wert der an das Upload Serlver übergeben wird (muss Zahl sein)
+		latencyShow = '—';							// Wert der im Frontend angezeigt wird
 	}
 	
 	// Runden von der Ergebnisse
 	var downloadRateEnd = Math.round(downloadRate); 
-	var latencyEnd = Math.round(latency); 
+	var latencyEnd = Math.round(latency);
+	
+	if(latencyShow == null) latencyShow = latencyEnd;
 	
 	// Ergebnisse abspeichern
 	var textResultNew = textResult + downloadRateEnd + "|" + latencyEnd + "|" + originLat + "|" + originLng + "|" + timeStamp + "\r";
@@ -446,15 +467,20 @@ function printTrack() {
 	// Ergebnisse abspeichern für Email
 	textResultNew = textResultMail + downloadRateEnd + "|" + latencyEnd + "|" + originLat + "|" + originLng + "|" + timeStamp + "%0A";
 	textResultMail = textResultNew;
-
 	
-	// zeige Längen und Breitengrad
-	document.getElementById("latitudeId").firstChild.data = originLat;
-	document.getElementById("longitudeId").firstChild.data = originLng;
-
-	// zeige Latenzzeit und Downloadzeit an
-	document.getElementById("downloadRateOfTracking").firstChild.data = downloadRateEnd;
-	document.getElementById("latencyOfTracking").firstChild.data = latencyEnd;
+	if(p_trackmode) {
+		// zeige Längen und Breitengrad
+		document.getElementById("latitudeId").firstChild.data = originLat;
+		document.getElementById("longitudeId").firstChild.data = originLng;
+	
+		// zeige Latenzzeit und Downloadzeit an
+		document.getElementById("downloadRateOfTracking").firstChild.data = downloadRateEnd;
+		document.getElementById("latencyOfTracking").firstChild.data = latencyShow;
+	} else {
+		// zeige Latenzzeit und Downloadzeit an
+		document.getElementById("downloadRateOfTracking2").firstChild.data = downloadRateEnd;
+		document.getElementById("latencyOfTracking2").firstChild.data = latencyShow;
+	}
 	
 	// zeige werte in Log
 	log("Es wurden folgende Werte ermittelt:");
@@ -466,101 +492,105 @@ function printTrack() {
 }
 
 // Funktion die eine Messung durchführt
-function run() {	
+function run(p_trackmode) {								// Trackmode oder Einzelmessung -> Trackmode: true = Tracks, false = Einzel
 	log("run wurde aufgerufen.");
-	
+							
 	downloadTimeSum = 0;
 	latencyTimeSum = 0;
 
-	// Zeige Status und Anzahl Messungen
-	if(numberOfmeasurements < 50){
-		document.getElementById("stateOfTracking").setAttribute("style", "color:black");
-		document.getElementById("numberOfTracks").setAttribute("style", "color:red");			
-		document.getElementById("stateOfTracking").firstChild.data = "Tracking läuft, nicht unterbrechen";	
-	}else{
-		document.getElementById("stateOfTracking").setAttribute("style", "color:green");
-		document.getElementById("numberOfTracks").setAttribute("style", "color:green");
-		document.getElementById("stateOfTracking").firstChild.data = "Tracking kann gesendet werden";	
+	if(p_trackmode) {
+		// Zeige Status und Anzahl Messungen
+		if(numberOfmeasurements < 50) {
+			document.getElementById("stateOfTracking").setAttribute("style", "color:black");
+			document.getElementById("numberOfTracks").setAttribute("style", "color:red");			
+			document.getElementById("stateOfTracking").firstChild.data = "Tracking läuft, nicht unterbrechen";	
+		} else {
+			document.getElementById("stateOfTracking").setAttribute("style", "color:green");
+			document.getElementById("numberOfTracks").setAttribute("style", "color:green");
+			document.getElementById("stateOfTracking").firstChild.data = "Tracking kann gesendet werden";	
+		}
+		
+		// Koordinaten aktuallisieren
+		geoStart();
+		
+		// schauen ob Geoloaction an und ob es richtig gemessen hat
+		if(!geolocationStatus) {
+			// Fehler mit Geoloction!!!
+			document.getElementById("stateOfTracking").setAttribute("style", "color:red");
+			return;
+		}
 	}
 	
-	// Koordinaten aktuallisieren
-	geoStart();		
-	
-	// schauen ob Geoloaction an und ob es richtig gemessen hat
-	if(geolocationStatus){
 		// Zeit von Messung merken
 		now = new Date();
 		timeStamp = now.getTime();
 	
-		if(shortMeasure){
+		if(shortMeasure) {
 			log("Messung mit nur einem Punkt starten");
 			
 			// Downloadzeit berechnen
-			getDownloadTimeShort();   
-			// Latenzzeit berechnen
-			getLatencyShort();		
-		}else{
+			getDownloadTimeShort(url100, p_trackmode);
+			if(downloadTimeSum != 0) {
+				// Latenzzeit berechnen
+				getLatencyShort(url100);
+			} else latencyTimeSum = 0;
+		} else {
 			log("Messung mit drei Punkten starten");
 			
+			// Latenzzeit berechnen
+			getLatency(); 
 			// Downloadzeit berechnen
 			getDownloadTime(); 
-			// Latenzzeit berechnen
-			getLatency();
 		}
 		
 		// Werte ausgeben
-		printTrack();
+		printTrack("url100", p_trackmode);
 		
 		// Anzahl der Messungen Hochzählen und anzeigen
 		numberOfmeasurements = numberOfmeasurements +1;
-	}else{
-		
-		// Fehler mit Geoloction!!!
-		document.getElementById("stateOfTracking").setAttribute("style", "color:red");
-	}
 
 	log("run wurde beendet.");
 }
 
 // Funktion die die Latenzzeit berechnet mit einer Messung
-function getLatencyShort()
+function getLatencyShort(p_dataUrl)					// Parameter enthält URL zur Datei und gibt den Namen an Bsp. url50->speedtrack.org/.../50kb.txt
 { 
 	log("getLatency wurde aufgerufen.");
 	
-		url = url50;
+		url = p_dataUrl;
 		
-		// um Request abzufangen
-		xhr.onreadystatechange  = function()
-		{ 
-			if(xhr.readyState  == 4)
-			{
-				log("in redyState Block drin...");
-				
-				if(xhr.status  == 200){
+			// um Request abzufangen
+			xhr.onreadystatechange  = function()
+			{ 
+				if(xhr.readyState  == 4)
+				{
+					log("in redyState Block drin...");
 					
-					// ok Zeit stoppen
-					
-					endTimeHelp = new Date();		// da sonst bei threadwechsel die daten verfäscht werdenkönnen
-					latencyTimeEnd = endTimeHelp.getTime();
-					
-					latencyTimeSum = latencyTimeSum + (latencyTimeEnd - latencyTimeStart);
-					
-					finLatencyMeasure = true;
-					showNotLoadImg();
-					
-					log("latencyTimeEnd wurde gemessen");
+					if(xhr.status  == 200){
+						
+						// ok Zeit stoppen
+						
+						endTimeHelp = new Date();		// da sonst bei threadwechsel die daten verfäscht werdenkönnen
+						latencyTimeEnd = endTimeHelp.getTime();
+						
+						latencyTimeSum = latencyTimeSum + (latencyTimeEnd - latencyTimeStart);
+						
+						finLatencyMeasure = true;
+						showNotLoadImg();
+						
+						log("latencyTimeEnd wurde gemessen");
+					}
+					else {        
+						// Zeige Status
+						document.getElementById("stateOfTracking").firstChild.data = "Fehler bei Latenzbestimmung";
+						document.getElementById("stateOfTracking").setAttribute("style", "color:red");
+						
+						log("Fehler, Latenz konnte nicht berechnet werden");
+		            	log("Fehler!!! Status : " + xhr.status);
+						// Fehler ausgeben
+					}
 				}
-				else {        
-					// Zeige Status
-					document.getElementById("stateOfTracking").firstChild.data = "Fehler bei Latenzbestimmung";
-					document.getElementById("stateOfTracking").setAttribute("style", "color:red");
-					
-					log("Fehler, Latenz konnte nicht berechnet werden");
-	            	log("Fehler!!! Status : " + xhr.status);
-					// Fehler ausgeben
-				}
-			}
-		}; 
+			}; 
 		
 		xhr.open("HEAD", url, false); 				// soll nur auf Header holen, und synchron sein
 		
@@ -630,45 +660,60 @@ function getLatency()
 
 
 // Funktion die die Downloadzeit berechnet mit Ajax und fuer eine Messung
-function getDownloadTimeShort()				// Gleiche Funktion wie oben, jedoch mit Ajax und nicht direct mit XHR
-{ 
+function getDownloadTimeShort(p_dataUrl, p_trackmode)				// Gleiche Funktion wie oben, jedoch mit Ajax und nicht direct mit XHR
+{ 														// Parameter gibt Datei an, Bsp. url50
 	log("getDownloadTime wurde aufgerufen.");
-		
-		// start measuring
-		startTimeHelp = new Date();
-		downloadTimeStart = startTimeHelp.getTime();
-		
-		$.ajax({
-			type: "GET",
-			url: url50,
-			async: false,
-			cache: false,			// wichtig da es sonst aus cach geladen wird
-			dataType: "text",
-			success: function(data) {
-				
-				// request funktuion wenn die 50 kilobyte runtergeladen wurden
-				
-				endTimeHelp = new Date();		// da sonst bei threadwechsel die daten verfäscht werdenkönnen
-				downloadTimeEnd = endTimeHelp.getTime();
-				
-				downloadTimeSum = downloadTimeSum + (downloadTimeEnd - downloadTimeStart);
-							
-				finDownloadMeasure = true;
-				showNotLoadImg();
-							
-				log("downloadTimeEnd wurde gemessen");				
-			},
-			error: function(jqXHR, textStatus, errorThrown){
-				// Zeige Status
-				document.getElementById("stateOfTracking").firstChild.data = "Fehler bei Downloadrate";
-				document.getElementById("stateOfTracking").setAttribute("style", "color:red");
-				
-				log("Fehler mit dem runterlaen der datei" + jqXHR + textStatus + errorThrown);
-				log("jqXHR: " + jqXHR);
-				log("textStatus: " + textStatus);
-				log("errorThrown: " +errorThrown);
-			}
-		}).responseText;
+	
+			// start measuring
+			startTimeHelp = new Date();
+			downloadTimeStart = startTimeHelp.getTime();
+			
+			$.ajax({
+				type: "GET",
+				url: p_dataUrl,
+				async: false,
+				cache: false,			// wichtig da es sonst aus cache geladen wird
+				dataType: "text",
+				success: function(data) {
+					
+					// request funktuion wenn die 50 kilobyte runtergeladen wurden
+					
+					endTimeHelp = new Date();		// da sonst bei threadwechsel die daten verfäscht werdenkönnen
+					downloadTimeEnd = endTimeHelp.getTime();
+					
+					downloadTimeSum = downloadTimeSum + (downloadTimeEnd - downloadTimeStart);
+								
+					finDownloadMeasure = true;
+					showNotLoadImg();
+								
+					log("downloadTimeEnd wurde gemessen");				
+				},
+				error: function(jqXHR, textStatus, errorThrown){	
+					// Falls keine Internetverbindung besteht gibt 
+					// XHR einen NETWORK_ERR zurück (code: 19 bzw. 101) (Webkit/Safari)
+					// "0x80004005 (NS_ERROR_FAILURE)" bzw. "0x80040111 (NS ERROR NOT AVAILABLE)" Firefox
+					if(errorThrown.code == 19 || errorThrown.code == 101 ||
+					  (errorThrown.message.search("0x80004005") ||  errorThrown.message.search("0x80040111")) != -1) {
+						downloadTimeSum = 0;
+						if(p_trackmode) {
+							document.getElementById("stateOfTracking").firstChild.data = "Keine Internetverbindung?";
+							document.getElementById("stateOfTracking").setAttribute("style", "color:red");
+						} else {
+							document.getElementById("stateOfTracking2").firstChild.data = "Keine Internetverbindung?";
+							document.getElementById("stateOfTracking2").setAttribute("style", "color:red");
+						}
+					} else {
+						// Zeige Status
+						document.getElementById("stateOfTracking").firstChild.data = "Fehler bei Downloadrate";
+						document.getElementById("stateOfTracking").setAttribute("style", "color:red");
+					}
+					
+					log("Fehler mit dem runterlaen der datei" + jqXHR + textStatus + errorThrown);
+					log("jqXHR: " + jqXHR);
+					log("textStatus: " + textStatus);
+					log("errorThrown: " +errorThrown);
+				}
+			}).responseText;
 	
 	log("getDownloadTime wurde beendet.");
 } 

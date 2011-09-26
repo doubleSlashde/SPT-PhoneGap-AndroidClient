@@ -20,7 +20,7 @@ function userInit() {
 	
 	// (ACHTUNG muss auch in script.js geändert werden)
 	// Angabe ob fuer Android oder nicht
-	var android = true;
+	var android = false;
 	// Versionsangabe
 	version = "1.0";
 	
