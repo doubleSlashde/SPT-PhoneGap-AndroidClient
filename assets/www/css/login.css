@@ -1,0 +1,61 @@
+/* ---------- CSS für Formulare ---------- */
+label,.label {
+	font-size: 105% !important;
+	font-weight: bold !important;
+	color: #2c4766 !important;
+}
+
+.loginInput {
+	width: 99% !important;
+	height: 35px;
+	font-size: 110%;
+	font-weight: bold;
+	padding: 0 0 0 5px;
+	border: 2px solid #999;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	box-shadow: 3px 3px 5px #bbb;
+	-moz-box-shadow: 3px 3px 5px #bbb;
+	-webkit-box-shadow: 3px 3px 3px #bbb;
+}
+
+.loginInputValue {
+	color: #808080 !important;
+	font-size: 75% !important;
+}
+
+/* Seitenabhängiges CSS */
+#loginPage {
+	height: 100%;
+}
+
+#loginForm,#regiForm {
+	margin: 15% 0 0 0;
+}
+
+#loginHelp {
+	width: 96%;
+	height: 45%;
+	background: transparent url(../picture/earth_cyan.png) no-repeat right;
+	margin: -6% 0 0 0;
+	padding: 20% 0 0 0;
+}
+
+#loginHelp a {
+	font-size: 110%;
+	color: #808080;
+	font-weight: bold;
+	text-decoration: underline !important;
+}
+
+#newPasswordForm {
+	padding: 20% 0 0 0;
+}
+
+#passwordNote {
+	margin: 10% 0 0 0;
+	font-size: 90%;
+	color: #2c4766;
+	font-weight: bold;
+}
