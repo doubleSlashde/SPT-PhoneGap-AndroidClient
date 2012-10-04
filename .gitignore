@@ -1,0 +1,8 @@
+# Eclipse files
+.classpath
+.project
+.settings/*
+
+# Android build files
+bin/*
+gen/*
