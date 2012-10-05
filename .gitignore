@@ -6,3 +6,6 @@
 # Android build files
 bin/*
 gen/*
+
+# Android Maven Plugin 
+target/*
