@@ -28,7 +28,6 @@ Preparation
 -----------
 * Set environment variable ANDROID_HOME to the path of your installed Android SDK
 * Add $ANDROID_HOME/tools and $ANDROID_HOME/platform-tools to your PATH
-	
 e.g. `sudo vi /etc/bash.bashrc`  
 add the following exports at the end of the file  
 ```
