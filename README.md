@@ -31,9 +31,10 @@ Preparation
 	
 e.g. `sudo vi /etc/bash.bashrc`  
 add the following exports at the end of the file  
-```export ANDROID_HOME=/path/to/android-sdk  
+``` export ANDROID_HOME=/path/to/android-sdk  
 export PATH=$ANDROID_HOME/tools:$PATH  
-export PATH=$ANDROID_HOME/platform-tools:$PATH```
+export PATH=$ANDROID_HOME/platform-tools:$PATH
+```
 
 Afterwards you have to install the phonegap/cordova libraray (which is located under the libs folder) to your local maven repository.  
 **Attention:** You **_have to care_** about the **_filename_** and the **_version number_** of the attached library, so replace  
