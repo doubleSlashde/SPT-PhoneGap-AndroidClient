@@ -31,7 +31,8 @@ Preparation
 	
 e.g. `sudo vi /etc/bash.bashrc`  
 add the following exports at the end of the file  
-``` export ANDROID_HOME=/path/to/android-sdk  
+```
+export ANDROID_HOME=/path/to/android-sdk  
 export PATH=$ANDROID_HOME/tools:$PATH  
 export PATH=$ANDROID_HOME/platform-tools:$PATH
 ```
