@@ -4,6 +4,8 @@ SPT-PhoneGap-AndroidClient
 SpeedTracks - die Mobilfunk Landkarte zum Mitmachen!
 [![Build Status](https://secure.travis-ci.org/SpeedTracks/SPT-PhoneGap-AndroidClient.png)](http://travis-ci.org/SpeedTracks/SPT-PhoneGap-AndroidClient)
 
+Lesen Sie bitte vor der Nutzung der Software die [https://github.com/SpeedTracks/SPT-WebClient/wiki/Nutzungsbedingungen](Nutzungsbedingungen).
+
 Initiator: [http://doubleslash.de](http://doubleslash.de)  
 Website: [http://speedtracks.org](http://speedtracks.org)  
 Bugs/Suggestions: [https://github.com/SpeedTracks/SPT-PhoneGap-AndroidClient/issues](https://github.com/SpeedTracks/SPT-PhoneGap-AndroidClient/issues)  
