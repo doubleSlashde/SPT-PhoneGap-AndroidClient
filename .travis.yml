@@ -5,9 +5,11 @@ jdk:
   - openjdk6
 
 before_install:
+  - sudo apt-get update -qq
   - mvn install:install-file -Dfile=libs/phonegap-1.3.0.jar -DgroupId=org.apache.cordova -DartifactId=cordova -Dversion=1.3.0 -Dclassifier=android -Dpackaging=jar
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
   - wget http://dl.google.com/android/android-sdk_r20.0.3-linux.tgz
   - tar -zxf android-sdk_r20.0.3-linux.tgz
-  - export ANDROID_HOME=~/builds/SpeedTracks/SPT-PhoneGap-AndroidClient/android-sdk-linux
+  - export ANDROID_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-  - $ANDROID_HOME/tools/android update sdk --filter 1,2,11 --no-ui --force
+  - android update sdk --filter 1,2,11 --no-ui --force
