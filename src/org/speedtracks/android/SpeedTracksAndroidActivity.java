@@ -1,7 +1,6 @@
 package org.speedtracks.android;
 
-import android.app.Activity;
-import com.phonegap.*;
+import org.apache.cordova.*;
 import android.os.Bundle;
 
 public class SpeedTracksAndroidActivity extends DroidGap {
