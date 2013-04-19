@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.speedtracks.android</groupId>
 	<artifactId>speedtracks</artifactId>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>1.3.0</version>
 	<packaging>apk</packaging>
 	<name>SpeedTracks</name>
 	<dependencies>
